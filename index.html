@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <div style="display:flex;justify-content:center;align-items:center;width:100%;height:100%;">
+      <canvas id="win" width="544" height="416"></canvas>
+    </div>
+    <script src="scripts.js"></script>
+    <script>
+      loadImages(
+        [
+          "floorLight",
+          "floorDark",
+          "unitBlackKing",
+          "unitBlackArcher",
+          "unitBlackPawn",
+          "unitWhiteKing",
+          "unitWhiteArcher",
+          "unitWhitePawn",
+          "floorLava",
+          "floorLavaBottom",
+          "floorWall",
+          "floorWallSolo",
+          "floorWallLeft",
+          "floorWallRight",
+          "floorCliff"
+        ]
+        , init);
+    </script>
+  </body>
+</html>
