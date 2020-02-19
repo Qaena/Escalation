@@ -27,7 +27,7 @@ class Square {
     this.x = ((col - 1) * board.squareSize) + board.spaceAround + board.leftSpace;
     this.y = ((row - 1) * board.squareSize) + board.spaceAround;
     this.hovered = false;
-    this.bg = row%2 != col%2 ? img.floorLight : img.floorDark;
+    this.bg = row%2 != col%2 ? 2 : 102;
     this.effect = null;
     this.sameEffect = {
       left: false,
@@ -41,7 +41,8 @@ class Square {
   redraw() {
     ctx.clearRect(this.x, this.y, board.squareSize - 1, board.squareSize - 1);
 
-    ctx.drawImage(this.effectBg ? this.effectBg : this.bg, this.x, this.y, board.squareSize, board.squareSize);
+    let tilePos = getTilePos(this.effectBg ? this.effectBg : this.bg);
+    ctx.drawImage(img.tileset3232, tilePos.x, tilePos.y, 32, 32, this.x, this.y, board.squareSize, board.squareSize);
 
     if (this.hovered) {
       ctx.globalAlpha = 0.2;
@@ -348,31 +349,60 @@ function refreshEffects() {
 
 function updateImages() {
   getSquaresInverse({effect: null}).forEach(sq => {
-    let imageStr = "floor";
+    let imageNum;
     switch(sq.effect) {
       case LAVA:
-        imageStr += "Lava";
-        if (sq.sameEffect.top) imageStr += "Bottom";
+        imageNum = 52;
+        if (sq.sameEffect.top) imageNum = 51;
         break;
       case WALL:
-        imageStr += "Wall";
-        if (!sq.sameEffect.left) {
-          if (!sq.sameEffect.right) {
-            imageStr += "Solo";
-          } else {
-            imageStr += "Left";
+        if (!sq.sameEffect.top && !sq.sameEffect.bottom) { //solo row
+          if (!sq.sameEffect.left && !sq.sameEffect.right) {
+            imageNum = 122; //solo
+          } else if (!sq.sameEffect.left && sq.sameEffect.right) {
+            imageNum = 123; //left
+          } else if (sq.sameEffect.left && sq.sameEffect.right) {
+            imageNum = 124; //mid
+          } else if (sq.sameEffect.left && !sq.sameEffect.right) {
+            imageNum = 125; //right
           }
-        } else {
-          if (!sq.sameEffect.right) {
-            imageStr += "Right";
+        } else if (sq.sameEffect.top && !sq.sameEffect.bottom) { //bottom row
+          if (!sq.sameEffect.left && !sq.sameEffect.right) {
+            imageNum = 128; //solo
+          } else if (!sq.sameEffect.left && sq.sameEffect.right) {
+            imageNum = 119; //left
+          } else if (sq.sameEffect.left && sq.sameEffect.right) {
+            imageNum = 120; //mid
+          } else if (sq.sameEffect.left && !sq.sameEffect.right) {
+            imageNum = 121; //right
+          }
+        } else if (sq.sameEffect.top && sq.sameEffect.bottom) { //mid row
+          if (!sq.sameEffect.left && !sq.sameEffect.right) {
+            imageNum = 112; //solo
+          } else if (!sq.sameEffect.left && sq.sameEffect.right) {
+            imageNum = 103; //left
+          } else if (sq.sameEffect.left && sq.sameEffect.right) {
+            imageNum = 104; //mid
+          } else if (sq.sameEffect.left && !sq.sameEffect.right) {
+            imageNum = 105; //right
+          }
+        } else if (!sq.sameEffect.top && sq.sameEffect.bottom) { //top row
+          if (!sq.sameEffect.left && !sq.sameEffect.right) {
+            imageNum = 96; //solo
+          } else if (!sq.sameEffect.left && sq.sameEffect.right) {
+            imageNum = 87; //left
+          } else if (sq.sameEffect.left && sq.sameEffect.right) {
+            imageNum = 88; //mid
+          } else if (sq.sameEffect.left && !sq.sameEffect.right) {
+            imageNum = 89; //right
           }
         }
         break;
       case CLIFF:
-        imageStr += "Cliff";
+        imageNum += "Cliff";
         break;
     }
-    sq.effectBg = img[imageStr];
+    sq.effectBg = imageNum;
   });
 }
 
@@ -424,4 +454,11 @@ function getObjectsFromInversePropertySpecs(collection, specs) {
 
     return match;
   });
+}
+
+function getTilePos(index) {
+  let x = ((index - 1) % 16) * 32;
+  let y = ((Math.floor((index - 1) / 16) * 32) + 80);
+
+  return {x: x, y: y};
 }
